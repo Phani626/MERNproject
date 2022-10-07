@@ -1,24 +1,23 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useContext } from "react";
 
 import Card from "../../shared/UIElements/Card";
 import PlaceItem from "./PlaceItem";
 import "./PlaceList.css";
+import Button from "../../shared/FormElements/Button";
+import { AuthContext } from "../../shared/Context/store";
 
 const PlaceList = (props) => {
+  const ctx = useContext(AuthContext);
   if (props.items.length === 0) {
-    console.log(props.items.length);
     return (
       <div className="place-list center">
         <Card>
           <h2>No Places Found !!</h2>
-          <Link to="./">Add New Place.</Link>
+          {ctx.isLoggedIn && <Button to="/places/new">Add New Place.</Button>}
         </Card>
       </div>
     );
   }
-
-  console.log(props.items.length);
 
   return (
     <Card className="place-list">

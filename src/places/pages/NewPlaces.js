@@ -1,73 +1,73 @@
-import React, { useCallback, useReducer } from "react";
+import React from "react";
 
-import "./NewPlace.css";
+import "./PlaceForm.css";
 import Input from "../../shared/FormElements/Input";
+import Button from "../../shared/FormElements/Button";
 import {
   VALIDATOR_MINLENGTH,
   VALIDATOR_REQUIRE,
 } from "../../shared/util/validators";
+import useForm from "../../shared/Hooks/form-hook";
 
-const formReducer = (state, actions) => {
-  switch (actions.type) {
-    case "INPUT_CHANGE":
-      let formIsValid = true;
-      for (const inputId in state.inputs) {
-        if (inputId === actions.type) {
-          formIsValid = formIsValid && actions.isValid;
-        } else {
-          formIsValid = formIsValid && state.inputs[inputId].isValid;
-        }
-      }
-      return {
-        ...state,
-        inputs: {
-          ...state.inputs,
-          [actions.inputId]: { value: actions.value, isValid: actions.isValid },
-        },
-        isValid: formIsValid,
-      };
-    default:
-      return state;
-  }
+const initialState = {
+  inputs: {
+    title: {
+      value: "",
+      isValid: false,
+    },
+    description: {
+      value: "",
+      isValid: false,
+    },
+    address1: {
+      value: "",
+      isValid: false,
+    },
+  },
+  isValid: false,
 };
 
 const NewPlaces = (props) => {
-  const initialState = {
-    inputs: {
-      title: {
-        value: "",
-        isValid: false,
-      },
-      description: {
-        value: "",
-        isValid: false,
-      },
-    },
-    isValid: false,
+  const [currentState, inputHandler] = useForm(
+    initialState.inputs,
+    initialState.isValid
+  );
+
+  const placeAdditionHandler = (event) => {
+    event.preventDefault();
+    console.log(currentState.inputs);
   };
 
-  const [currentState, dispatchFn] = useReducer(formReducer, initialState);
-
-  const titleInputHandler = useCallback((id, value, isValid) => {}, []);
-  const descriptionInputHandler = useCallback((id, value, isValid) => {}, []);
-
   return (
-    <form className="place-form">
+    <form className="place-form" onSubmit={placeAdditionHandler}>
       <Input
         element="input"
         type="text"
         label="Title"
+        id="title"
         validators={[VALIDATOR_REQUIRE()]}
         errorText="Please enter a valid value."
-        onInput={titleInputHandler}
+        onInput={inputHandler}
       />
       <Input
         element="textarea"
         label="Description"
-        validators={[VALIDATOR_REQUIRE(), VALIDATOR_MINLENGTH(5)]}
+        id="description"
+        validators={[VALIDATOR_MINLENGTH(5)]}
         errorText="Please enter a valid Description (Atleast 5 Characters)."
-        onInput={descriptionInputHandler}
+        onInput={inputHandler}
       />
+      <Input
+        element="input"
+        label="Address"
+        id="address"
+        validators={[VALIDATOR_REQUIRE()]}
+        errorText="Please enter a valid Address ."
+        onInput={inputHandler}
+      />
+      <Button type="submit" disabled={!currentState.isValid}>
+        Add Place
+      </Button>
     </form>
   );
 };
